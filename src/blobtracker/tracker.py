@@ -8,17 +8,14 @@ class BlobTracker:
     
     def process_frame(self, frame, color_name, min_area):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        mask = self.mask_processor.create_mask(hsv, color_name)
-        mask = self.mask_processor.clean_mask(mask)
+        mask = self.mask_processor.clean_mask(self.mask_processor.create_mask(hsv, color_name))
         blobs = self.contour_detector.find_blobs(mask, min_area)
         self.visualizer.draw_blobs(frame, blobs)
         return frame, blobs
     
     def track_video(self, video_processor, color_name, min_area=500, output_path=None):
         writer = video_processor.create_writer(output_path) if output_path else None
-        
-        frame_count = 0
-        total_detections = 0
+        frame_count, total_detections = 0, 0
         
         print(f"Tracking {color_name.upper()} blobs...")
         
@@ -45,4 +42,4 @@ class BlobTracker:
             writer.release()
         cv2.destroyAllWindows()
         
-        print(f"\nCompleted: {frame_count} frames, {total_detections} total detections")
+        print(f"\nCompleted: {frame_count} frames, {total_detections} detections")
