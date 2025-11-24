@@ -1,8 +1,9 @@
-COLOR_RANGES = {
-    'red': [[(0, 50, 50), (10, 255, 255)], [(170, 50, 50), (180, 255, 255)]],
-    'green': [[(40, 50, 50), (80, 255, 255)]],
-    'blue': [[(100, 50, 50), (130, 255, 255)]],
-    'yellow': [[(20, 50, 50), (40, 255, 255)]], 
-    'orange': [[(10, 50, 50), (20, 255, 255)]],
-    'purple': [[(130, 50, 50), (160, 255, 255)]],
-}
+import cv2
+import numpy as np
+
+COLOR_MAP = {0: 'red', 30: 'orange', 60: 'yellow', 120: 'green', 180: 'cyan', 240: 'blue', 300: 'purple'}
+
+def detect_color(bgr):
+    hsv = cv2.cvtColor(np.uint8([[bgr]]), cv2.COLOR_BGR2HSV)[0][0]
+    h = hsv[0] * 2 
+    return min(COLOR_MAP.items(), key=lambda x: abs(x[0] - h))[1]
