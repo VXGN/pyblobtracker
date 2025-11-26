@@ -15,13 +15,14 @@ class MaskProcessor:
     def clean_mask(self, mask, kernel_size=5, morph_type='close', iterations=1):
         kernel = np.ones((kernel_size, kernel_size), np.uint8)
         
-        if morph_type == 'close':
-            result = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=iterations)
-        elif morph_type == 'open':
-            result = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=iterations)
-        else:
-            result = mask
-            
+        match morph_type:
+            case 'close':
+                result = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=iterations)
+            case 'open':
+                result = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=iterations)
+            case _:
+                result = mask
+                
         return result
     
     def combine_masks(self, masks, operation='or'):
@@ -32,10 +33,11 @@ class MaskProcessor:
             
         result = masks[0]
         for mask in masks[1:]:
-            if operation == 'or':
-                result = cv2.bitwise_or(result, mask)
-            elif operation == 'and':
-                result = cv2.bitwise_and(result, mask)
+            match operation:
+                case 'or':
+                    result = cv2.bitwise_or(result, mask)
+                case 'and':
+                    result = cv2.bitwise_and(result, mask)
         return result
     
     def apply_roi(self, mask, roi):
