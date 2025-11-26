@@ -20,6 +20,13 @@ class MaskProcessor:
                 result = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=iterations)
             case 'open':
                 result = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=iterations)
+            case 'both':
+                result = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=iterations)
+                result = cv2.morphologyEx(result, cv2.MORPH_CLOSE, kernel, iterations=iterations)
+            case 'erode':
+                result = cv2.erode(mask, kernel, iterations=iterations)
+            case 'dilate':
+                result = cv2.dilate(mask, kernel, iterations=iterations)
             case _:
                 result = mask
                 
@@ -38,6 +45,8 @@ class MaskProcessor:
                     result = cv2.bitwise_or(result, mask)
                 case 'and':
                     result = cv2.bitwise_and(result, mask)
+                case 'xor':
+                    resulr = cv2.bitwise_xor(result, mask)
         return result
     
     def apply_roi(self, mask, roi):
