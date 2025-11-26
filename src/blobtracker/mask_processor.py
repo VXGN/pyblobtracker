@@ -10,8 +10,39 @@ class MaskProcessor:
             cv2.inRange(hsv_frame, np.array(lo), np.array(hi))
             for lo, hi in self.color_ranges[color_name]
         ]
-        return masks[0] if len(masks) == 1 else cv2.bitwise_or.reduce(masks)
-
-    def clean_mask(self, mask, kernel_size=5):
+        return masks[0] if len(masks) == 1 else cv2.bitwise_or(masks[0], masks[1]) if len(masks) == 2 else cv2.bitwise_or.reduce(masks)
+    
+    def clean_mask(self, mask, kernel_size=5, morph_type='close', iterations=1):
         kernel = np.ones((kernel_size, kernel_size), np.uint8)
-        return cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+        
+        if morph_type == 'close':
+            result = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=iterations)
+        elif morph_type == 'open':
+            result = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=iterations)
+        else:
+            result = mask
+            
+        return result
+    
+    def combine_masks(self, masks, operation='or'):
+        if not masks:
+            return None
+        if len(masks) == 1:
+            return masks[0]
+            
+        result = masks[0]
+        for mask in masks[1:]:
+            if operation == 'or':
+                result = cv2.bitwise_or(result, mask)
+            elif operation == 'and':
+                result = cv2.bitwise_and(result, mask)
+        return result
+    
+    def apply_roi(self, mask, roi):
+        x, y, w, h = roi
+        result = np.zeros_like(mask)
+        result[y:y+h, x:x+w] = mask[y:y+h, x:x+w]
+        return result
+    
+    def invert_mask(self, mask):
+        return cv2.bitwise_not(mask)
