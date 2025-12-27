@@ -6,14 +6,16 @@ class BlobTracker:
         self.contour_detector = contour_detector
         self.visualizer = visualizer
     
-    def process_frame(self, frame, color_name, min_area):
+    def process_frame(self, frame, color_name, min_area, max_area=None, sort_by='area', 
+                      draw_contour=False, draw_connections=False):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         mask = self.mask_processor.clean_mask(self.mask_processor.create_mask(hsv, color_name))
-        blobs = self.contour_detector.find_blobs(mask, min_area)
-        self.visualizer.draw_blobs(frame, blobs)
+        blobs = self.contour_detector.find_blobs(mask, min_area, max_area, sort_by)
+        self.visualizer.draw_blobs(frame, blobs, draw_contour, draw_connections)
         return frame, blobs
     
-    def track_video(self, video_processor, color_name, min_area=500, output_path=None):
+    def track_video(self, video_processor, color_name, min_area=500, max_area=None, sort_by='area', 
+                    draw_contour=False, draw_connections=False, output_path=None):
         writer = video_processor.create_writer(output_path) if output_path else None
         frame_count, total_detections = 0, 0
         
@@ -25,7 +27,9 @@ class BlobTracker:
                 break
             
             frame_count += 1
-            processed_frame, blobs = self.process_frame(frame, color_name, min_area)
+            processed_frame, blobs = self.process_frame(
+                frame, color_name, min_area, max_area, sort_by, draw_contour, draw_connections
+            )
             total_detections += len(blobs)
             
             if writer:
