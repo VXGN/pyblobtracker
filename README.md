@@ -2,7 +2,7 @@
 
 ## Installation
 ```bash
-git clone https://github.com/yourusername/color-blob-tracker.git
+git clone https://github.com/VXGN/color-blob-tracker.git
 cd color-blob-tracker
 pip install -r requirements.txt
 ```
