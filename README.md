@@ -22,3 +22,12 @@ python scripts/main.py input_video.mp4 -c green -o output.mp4 -m 500
 ```
 opencv-python>=4.5.0
 numpy>=1.19.0
+
+run from venv
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+pip install -r requirements.txt
+
+python scripts/main.py input_video.mp4 -c green -o output.mp4 -m 500
+```
